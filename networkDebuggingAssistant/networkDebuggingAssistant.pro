@@ -19,15 +19,20 @@ SOURCES += \
     ../src/tcpclient.cpp \
     ../src/tcpserver.cpp \
     main.cpp \
-    networkdebuggingassistant.cpp
+    networkdebuggingassistant.cpp \
+    tcpServerTest.cpp \
+    testForm.cpp
 
 HEADERS += \
     ../src/tcpclient.h \
     ../src/tcpserver.h \
-    networkdebuggingassistant.h
+    networkdebuggingassistant.h \
+    tcpServerTest.h \
+    testForm.h
 
 FORMS += \
-    networkdebuggingassistant.ui
+    networkdebuggingassistant.ui \
+    testForm.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

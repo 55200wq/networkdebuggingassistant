@@ -2,6 +2,8 @@
 #define TESTFORM_H
 
 #include <QWidget>
+#include "../src/tcpserver.h"
+#include "../src/tcpclient.h"
 
 namespace Ui {
 class testForm;
