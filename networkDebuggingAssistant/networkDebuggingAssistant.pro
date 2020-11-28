@@ -1,5 +1,5 @@
 QT       += core gui
-
+QT       += network
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
@@ -16,10 +16,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    ../src/tcpclient.cpp \
+    ../src/tcpserver.cpp \
     main.cpp \
     networkdebuggingassistant.cpp
 
 HEADERS += \
+    ../src/tcpclient.h \
+    ../src/tcpserver.h \
     networkdebuggingassistant.h
 
 FORMS += \
