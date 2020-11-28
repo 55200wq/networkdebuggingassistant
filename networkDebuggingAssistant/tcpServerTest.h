@@ -3,6 +3,12 @@
 
 #include <QTcpServer>
 #include <QTcpSocket>
+#include <QNetworkInterface>
+
+struct server_info{
+    quint16 port;
+    QHostAddress addr;
+};//用于创建服务器
 
 struct socket_info{
     quint16 port;
@@ -14,19 +20,27 @@ struct socket_info{
 
 class tcpServerTest : public QTcpServer
 {
+    Q_OBJECT
 public:
     explicit tcpServerTest(QObject *parent = Q_NULLPTR);
     ~tcpServerTest();
 
+    //连接释放信号与槽相关
     void init_connect();
     void serverDisconnect();
     void init_clientSocketConnect(QTcpSocket* clientSocket);\
     void clientSocketDisconnect(QTcpSocket* clientSocket);
 
+    //成员函数
     QList<QTcpSocket*> &getClientList();
     socket_info* getHostInfo(QTcpSocket* socket);
     void deleteHostInfo(socket_info* info);
 
+    void setServerInfo(server_info* info);
+    void createServer(const QHostAddress& hostAddr, quint16 port);
+
+    static QList<QHostAddress> getLocalAddrList();
+    static QList<QNetworkInterface> getAllLocalNetworkInterface();
 /*************************信号与槽*************************/
 public slots:
     void onNewConnection();//QTcpServer 的 newConnection() 信号
@@ -59,6 +73,7 @@ public://发送信号内联函数
 
 /*************************变量区***************************/
 public:
+    server_info* serverInfo = nullptr;//用于创建服务器
     QTcpSocket* currentClient;
     //QList<QTcpSocket*> clientList;//连接上来的客户端列表
 private:

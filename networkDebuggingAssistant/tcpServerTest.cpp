@@ -3,6 +3,7 @@
 tcpServerTest::tcpServerTest(QObject *parent) :
     QTcpServer(parent)
 {
+    qRegisterMetaType<QTcpSocket*>("QTcpSocket*");
     init_connect();
 }
 tcpServerTest::~tcpServerTest()
@@ -75,6 +76,22 @@ void tcpServerTest::deleteHostInfo(socket_info* info)
     delete info->sendData;
     delete info;
 }
+
+QList<QHostAddress> tcpServerTest::getLocalAddrList()
+{
+    QList<QHostAddress> addrlist = QNetworkInterface::allAddresses();
+    for(auto addr: addrlist){
+        if(QAbstractSocket::IPv6Protocol == addr.protocol()){
+            addrlist.removeOne(addr);
+        }
+    }
+    return addrlist;
+}
+QList<QNetworkInterface> tcpServerTest::getAllLocalNetworkInterface()
+{
+    return QNetworkInterface::allInterfaces();
+}
+
 /***************************** 槽函数 *********************************/
 void tcpServerTest::onNewConnection()
 {
@@ -150,4 +167,14 @@ void tcpServerTest::closeServerSlot()//关闭服务器
     sockInfoMap.clear();
     this->clientList.clear();
     this->close();
+}
+
+void setServerInfo(server_info* info)
+{
+
+}
+
+void tcpServerTest::createServer(const QHostAddress& hostAddr, quint16 port)
+{
+    this->listen(hostAddr, port);
 }
