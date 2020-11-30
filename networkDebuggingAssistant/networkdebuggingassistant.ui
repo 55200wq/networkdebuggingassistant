@@ -278,7 +278,7 @@
        <item row="11" column="1">
         <widget class="QPushButton" name="pBtn_clear_pTEShowData">
          <property name="text">
-          <string>清楚显示</string>
+          <string>清除显示</string>
          </property>
         </widget>
        </item>
@@ -293,7 +293,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>
