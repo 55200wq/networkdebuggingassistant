@@ -77,6 +77,11 @@ void tcpServerTest::deleteHostInfo(socket_info* info)
     delete info;
 }
 
+QMap<QTcpSocket*, socket_info*>* tcpServerTest::getSockInfoMap()
+{
+    return &(this->sockInfoMap);
+}
+// 静态函数
 QList<QHostAddress> tcpServerTest::getLocalAddrList()
 {
     QList<QHostAddress> addrlist = QNetworkInterface::allAddresses();
@@ -91,6 +96,8 @@ QList<QNetworkInterface> tcpServerTest::getAllLocalNetworkInterface()
 {
     return QNetworkInterface::allInterfaces();
 }
+
+
 
 /***************************** 槽函数 *********************************/
 void tcpServerTest::onNewConnection()
@@ -140,7 +147,6 @@ void tcpServerTest::onSocketStatChanged(QAbstractSocket::SocketState)
 }
 void tcpServerTest::onSocketReadyRead()//读取数据进行处理
 {
-
     QTcpSocket* socket = (QTcpSocket*)QObject::sender();
     qDebug()<<"来自" << sockInfoMap[socket]->addr.toString()<<"  的消息： ";
     //qDebug()<<socker->readAll();
@@ -167,11 +173,6 @@ void tcpServerTest::closeServerSlot()//关闭服务器
     sockInfoMap.clear();
     this->clientList.clear();
     this->close();
-}
-
-void tcpServerTest::setServerInfo(server_info* info)
-{
-
 }
 
 bool tcpServerTest::createServer(const QHostAddress& hostAddr, quint16 port)

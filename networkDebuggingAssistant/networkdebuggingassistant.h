@@ -54,6 +54,8 @@ private slots:
 
     void on_pBtn_connect_clicked();
 
+    void on_pBtn_clear_pTEShowData_clicked();
+
 public:
     tcpServerTest* server;
     QList<QHostAddress> localAddressList;

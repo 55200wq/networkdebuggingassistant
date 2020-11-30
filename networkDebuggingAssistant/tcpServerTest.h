@@ -35,8 +35,8 @@ public:
     QList<QTcpSocket*> *getClientList();
     socket_info* getHostInfo(QTcpSocket* socket);
     void deleteHostInfo(socket_info* info);
+    QMap<QTcpSocket*, socket_info*>* getSockInfoMap();
 
-    void setServerInfo(server_info* info);
     bool createServer(const QHostAddress& hostAddr, quint16 port);
 
     static QList<QHostAddress> getLocalAddrList();

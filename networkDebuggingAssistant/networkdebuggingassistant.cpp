@@ -16,7 +16,6 @@ networkDebuggingAssistant::networkDebuggingAssistant(QWidget *parent)
     ui->sBx_clientPort->hide();
     ui->lb_clientList->show();
     ui->cBx_clientList->show();
-
     customContextMenu = new QMenu;
     customContextMenu->addAction(ui->action_SetWidthBgColor);
     customContextMenu->addAction(ui->action_setFont);
@@ -52,6 +51,10 @@ void networkDebuggingAssistant::getLocalAddressList(QList<QHostAddress> &list)
 
 void networkDebuggingAssistant::showAllLocalAddressTo_cBx_hostAddr()
 {
+    int curr_index = 0;
+    QString curr = ui->cBx_hostAddr->currentText();
+    ui->cBx_hostAddr->clear();//清除 cBx_hostAddr 所有节点
+    //qDebug()<<curr;
     getLocalAddressList(this->localAddressList);//获取list
     if(this->localAddressList.value(0) == QHostAddress::AnyIPv4){
         this->ui->cBx_hostAddr->addItem("AnyIPv4", QVariant::fromValue(6));
@@ -59,7 +62,11 @@ void networkDebuggingAssistant::showAllLocalAddressTo_cBx_hostAddr()
     for(int i = 1; i< this->localAddressList.size(); i++){
         QVariant var = QVariant::fromValue(this->localAddressList.value(i));
         this->ui->cBx_hostAddr->addItem(this->localAddressList.value(i).toString(), var);
+        if(curr == this->localAddressList.value(i).toString()){
+            curr_index = i;
+        }
     }
+    ui->cBx_hostAddr->setCurrentIndex(curr_index);
 }
 
 void networkDebuggingAssistant::on_cBx_connectType_activated(int index)
@@ -107,13 +114,19 @@ void networkDebuggingAssistant::on_action_setFont_triggered()
 }
 
 /***************** network 相关 ****************/
+/////////////////////////////////////////////////////
+/// \brief networkDebuggingAssistant::socketConnectSlot
+/// \param client
+///
+/// TCPServer 相关槽函数
+///
 void networkDebuggingAssistant::socketConnectSlot(QTcpSocket* client)
 {
     //qDebug()<<"parent: ";
     //qDebug()<<"客户端连接成功";
 
     //在UI上显示相应客户端信息
-    ui->cBx_clientList->addItem(client->peerAddress().toString(), QVariant::fromValue(client));
+    ui->cBx_clientList->addItem(client->peerAddress().toString()+":"+QString::number( client->peerPort()), QVariant::fromValue(client));
 
 }
 void networkDebuggingAssistant::socketDisconnectSlot(QTcpSocket* client)
@@ -126,9 +139,28 @@ void networkDebuggingAssistant::socketDisconnectSlot(QTcpSocket* client)
 }
 void networkDebuggingAssistant::socketRevDataToClientSlot(QTcpSocket* client, QByteArray* data)
 {
-
+    qDebug()<<"接收到消息";
+    QMap<QTcpSocket*, socket_info*>* map = this->server->getSockInfoMap();
+    auto socketInfo = map->value(client);
+    ui->pTE_showData->appendPlainText(QString(*socketInfo->revData));
 }
 
+/////////////////////////////////////////////////////////////
+/// \brief networkDebuggingAssistant::on_cBx_connectType_currentIndexChanged
+/// \param index
+///
+/// TCPClient 相关槽函数
+///
+
+
+
+
+/////////////////////////////////////////////////////////////
+/// \brief networkDebuggingAssistant::on_cBx_connectType_currentIndexChanged
+/// \param index
+///
+/// UI 控件槽函数
+///
 void networkDebuggingAssistant::on_cBx_connectType_currentIndexChanged(int index)
 {
     switch(index){
@@ -174,7 +206,7 @@ void networkDebuggingAssistant::on_pBtn_connect_clicked()
     case TCP_SERVER://创建服务器
         if(pBtflag){//关闭服务器
             sendCloseServer();
-            ui->cBx_hostAddr->clear();
+
             success = false;
         }
         else{//没有连接则连接，创建服务器
@@ -183,7 +215,6 @@ void networkDebuggingAssistant::on_pBtn_connect_clicked()
             quint16 port = ui->sBx_port->value();
             if(this->server->createServer(curr_addr, port)){
                 qDebug()<<"server 创建成功";
-                ui->pBtn_connect->setText("断开");
                 success = true;
             }
         }
@@ -193,7 +224,13 @@ void networkDebuggingAssistant::on_pBtn_connect_clicked()
 
         }
         else{//创建连接
-
+            ui->setupUi(this);
+            ui->lb_clientAddr->show();
+            ui->lEt_clientAddr->show();
+            ui->lb_clientPort->show();
+            ui->sBx_clientPort->show();
+            ui->lb_clientList->hide();
+            ui->cBx_clientList->hide();
         }
         break;
     case UDP:
@@ -229,4 +266,9 @@ void networkDebuggingAssistant::on_pBtn_connect_clicked()
             box.exec();
         }
     }
+}
+
+void networkDebuggingAssistant::on_pBtn_clear_pTEShowData_clicked()
+{
+    ui->pTE_showData->clear();
 }
