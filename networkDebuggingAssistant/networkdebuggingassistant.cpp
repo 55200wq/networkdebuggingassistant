@@ -9,15 +9,24 @@ networkDebuggingAssistant::networkDebuggingAssistant(QWidget *parent)
 {
     qRegisterMetaType<QTcpSocket*>("QTcpSocket*");
 
-
     ui->setupUi(this);
+    ui->lb_clientAddr->hide();
+    ui->lEt_clientAddr->hide();
+    ui->lb_clientPort->hide();
+    ui->sBx_clientPort->hide();
+    ui->lb_clientList->show();
+    ui->cBx_clientList->show();
+
     customContextMenu = new QMenu;
     customContextMenu->addAction(ui->action_SetWidthBgColor);
     customContextMenu->addAction(ui->action_setFont);
     server = new tcpServerTest(this);
-
+    clientSocketList = this->server->getClientList();
     /*********************** 连接信号与槽 **************************/
     connect(this, SIGNAL(closeServerSignal()), this->server, SLOT(closeServerSlot()));;
+
+
+    showAllLocalAddressTo_cBx_hostAddr();
 }
 
 networkDebuggingAssistant::~networkDebuggingAssistant()
@@ -26,7 +35,32 @@ networkDebuggingAssistant::~networkDebuggingAssistant()
     delete customContextMenu;
 }
 
+void networkDebuggingAssistant::getLocalAddressList(QList<QHostAddress> &list)
+{
+    /*if(!this->localAddressList.isEmpty()){
+        this->localAddressList.clear();
+    }*/
+    //this->localAddressList.append(QHostAddress::AnyIPv4);
+    list = tcpServerTest::getLocalAddrList();
+    for(auto addr : list){
+        if(addr.protocol() == QAbstractSocket::IPv6Protocol){
+            list.removeOne(addr);
+        }
+    }
+    list.insert(0, QHostAddress::AnyIPv4);
+}
 
+void networkDebuggingAssistant::showAllLocalAddressTo_cBx_hostAddr()
+{
+    getLocalAddressList(this->localAddressList);//获取list
+    if(this->localAddressList.value(0) == QHostAddress::AnyIPv4){
+        this->ui->cBx_hostAddr->addItem("AnyIPv4", QVariant::fromValue(6));
+    }
+    for(int i = 1; i< this->localAddressList.size(); i++){
+        QVariant var = QVariant::fromValue(this->localAddressList.value(i));
+        this->ui->cBx_hostAddr->addItem(this->localAddressList.value(i).toString(), var);
+    }
+}
 
 void networkDebuggingAssistant::on_cBx_connectType_activated(int index)
 {
@@ -75,11 +109,20 @@ void networkDebuggingAssistant::on_action_setFont_triggered()
 /***************** network 相关 ****************/
 void networkDebuggingAssistant::socketConnectSlot(QTcpSocket* client)
 {
+    //qDebug()<<"parent: ";
+    //qDebug()<<"客户端连接成功";
+
+    //在UI上显示相应客户端信息
+    ui->cBx_clientList->addItem(client->peerAddress().toString(), QVariant::fromValue(client));
 
 }
 void networkDebuggingAssistant::socketDisconnectSlot(QTcpSocket* client)
 {
-
+    //qDebug()<<"parent: ";
+    //qDebug()<<"客户端断开";
+    //在UI上删除相应信息
+    int index = this->clientSocketList->indexOf(client);
+    ui->cBx_clientList->removeItem(index);
 }
 void networkDebuggingAssistant::socketRevDataToClientSlot(QTcpSocket* client, QByteArray* data)
 {
@@ -88,7 +131,15 @@ void networkDebuggingAssistant::socketRevDataToClientSlot(QTcpSocket* client, QB
 
 void networkDebuggingAssistant::on_cBx_connectType_currentIndexChanged(int index)
 {
+    switch(index){
+    case TCP_SERVER:
 
+        break;
+    case TCP_CLIENT:
+        break;
+    case UDP:
+        break;
+    }
 }
 
 void networkDebuggingAssistant::on_pBt_textSend_clicked()
@@ -99,7 +150,7 @@ void networkDebuggingAssistant::on_pBt_textSend_clicked()
 void networkDebuggingAssistant::on_pBtn_connect_clicked()
 {
     static bool pBtflag = false;//是否连接
-    int type;
+    int type = 255;
     bool success = false;
     if(!pBtflag){
 
@@ -119,34 +170,30 @@ void networkDebuggingAssistant::on_pBtn_connect_clicked()
         }
         this->connectType = type;
     }
-    switch(type){
+    switch(this->connectType){
     case TCP_SERVER://创建服务器
         if(pBtflag){//关闭服务器
             sendCloseServer();
             ui->cBx_hostAddr->clear();
+            success = false;
         }
         else{//没有连接则连接，创建服务器
-            getAddrAndPort();//获取 addr 和 port
-            success = this->server->creatServer();
-            if(success)
-            {
-                qDebug()<<"服务器创建成功";
+            QHostAddress curr_addr = ui->cBx_hostAddr->currentData().value<QHostAddress>();
+            QMessageBox box;
+            quint16 port = ui->sBx_port->value();
+            if(this->server->createServer(curr_addr, port)){
+                qDebug()<<"server 创建成功";
+                ui->pBtn_connect->setText("断开");
+                success = true;
             }
-            else{
-                qDebug("创建服务器失败");
-            }
-            clientSocketList = this->server->getInstance();//获取客户端列表
         }
         break;
     case TCP_CLIENT://客户端连接服务器
         if(pBtflag){//关闭连接
-            this->client->getClient()->close();
+
         }
         else{//创建连接
-            this->client->setPort(ui->spinBox->value());
-            this->client->setQHostAddress(ui->CbB_IP->currentData().value<QHostAddress>());
-            this->client->connectServer(this->client->getHostAddress(), this->client->getPort());
-            success = true;
+
         }
         break;
     case UDP:
@@ -160,10 +207,12 @@ void networkDebuggingAssistant::on_pBtn_connect_clicked()
     default:
         break;
     }
+    //处理
     if(pBtflag){
         ui->pBtn_connect->setText("连接");
         ui->cBx_hostAddr->setEnabled(true);
         ui->cBx_connectType->setEnabled(true);
+        showAllLocalAddressTo_cBx_hostAddr();
         pBtflag = false;
     }
     else {
@@ -173,6 +222,11 @@ void networkDebuggingAssistant::on_pBtn_connect_clicked()
             ui->cBx_connectType->setEnabled(false);
             ui->cBx_clientList->clear();
             pBtflag = true;
+        }
+        else{
+            QMessageBox box;
+            box.setText("server 创建失败");
+            box.exec();
         }
     }
 }

@@ -23,6 +23,8 @@ public:
     networkDebuggingAssistant(QWidget *parent = nullptr);
     ~networkDebuggingAssistant();
 
+    void getLocalAddressList(QList<QHostAddress> &list);
+    void showAllLocalAddressTo_cBx_hostAddr();
 public slots:
     //自定义槽函数
 signals:
@@ -54,10 +56,14 @@ private slots:
 
 public:
     tcpServerTest* server;
+    QList<QHostAddress> localAddressList;
+    QList<QTcpSocket*>* clientSocketList;
 private:
     //ui变量
     Ui::networkDebuggingAssistant *ui;
     QMenu* customContextMenu;
     int connectType = 0;
+
 };
+Q_DECLARE_METATYPE(QHostAddress)
 #endif // NETWORKDEBUGGINGASSISTANT_H

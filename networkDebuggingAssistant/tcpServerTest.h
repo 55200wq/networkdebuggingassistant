@@ -28,21 +28,22 @@ public:
     //连接释放信号与槽相关
     void init_connect();
     void serverDisconnect();
-    void init_clientSocketConnect(QTcpSocket* clientSocket);\
+    void init_clientSocketConnect(QTcpSocket* clientSocket);
     void clientSocketDisconnect(QTcpSocket* clientSocket);
 
     //成员函数
-    QList<QTcpSocket*> &getClientList();
+    QList<QTcpSocket*> *getClientList();
     socket_info* getHostInfo(QTcpSocket* socket);
     void deleteHostInfo(socket_info* info);
 
     void setServerInfo(server_info* info);
-    void createServer(const QHostAddress& hostAddr, quint16 port);
+    bool createServer(const QHostAddress& hostAddr, quint16 port);
 
     static QList<QHostAddress> getLocalAddrList();
     static QList<QNetworkInterface> getAllLocalNetworkInterface();
 /*************************信号与槽*************************/
 public slots:
+
     void onNewConnection();//QTcpServer 的 newConnection() 信号
     //与socket连接
     void onSocketConnection();

@@ -4,7 +4,7 @@ tcpServerTest::tcpServerTest(QObject *parent) :
     QTcpServer(parent)
 {
     qRegisterMetaType<QTcpSocket*>("QTcpSocket*");
-    init_connect();
+
 }
 tcpServerTest::~tcpServerTest()
 {
@@ -12,9 +12,9 @@ tcpServerTest::~tcpServerTest()
         serverDisconnect();
 }
 
-QList<QTcpSocket*>& tcpServerTest::getClientList()
+QList<QTcpSocket*>* tcpServerTest::getClientList()
 {
-    return clientList;
+    return &clientList;
 }
 
 //连接信号与槽
@@ -109,9 +109,9 @@ void tcpServerTest::onNewConnection()
     info = getHostInfo(this->currentClient);
 
     sockInfoMap.insert(this->currentClient, info);
-    //qDebug()<<"name : " <<sockInfoMap[socket]->hostName;//
-    //qDebug()<<sockInfoMap[socket]->addr.toString();
-    //qDebug()<<sockInfoMap[socket]->port;
+    qDebug()<<"name : " <<sockInfoMap[this->currentClient]->hostName;//
+    qDebug()<<sockInfoMap[this->currentClient]->addr.toString();
+    qDebug()<<sockInfoMap[this->currentClient]->port;
     sendSocketConnect(this->currentClient);//发送新客户端连接信号
 }
 
@@ -120,7 +120,7 @@ void tcpServerTest::onSocketConnection()
 
 }
 
-void tcpServerTest::onSocketDisconnection()
+void tcpServerTest::onSocketDisconnection()//客户端断开处理槽函数
 {
     QTcpSocket* disconnectClientSocket = (QTcpSocket*)QObject::sender();
     qDebug()<<"tcpServer::onSocketDisconnection(): ";
@@ -138,7 +138,7 @@ void tcpServerTest::onSocketStatChanged(QAbstractSocket::SocketState)
 {
 
 }
-void tcpServerTest::onSocketReadyRead()//信息处理
+void tcpServerTest::onSocketReadyRead()//读取数据进行处理
 {
 
     QTcpSocket* socket = (QTcpSocket*)QObject::sender();
@@ -169,12 +169,13 @@ void tcpServerTest::closeServerSlot()//关闭服务器
     this->close();
 }
 
-void setServerInfo(server_info* info)
+void tcpServerTest::setServerInfo(server_info* info)
 {
 
 }
 
-void tcpServerTest::createServer(const QHostAddress& hostAddr, quint16 port)
+bool tcpServerTest::createServer(const QHostAddress& hostAddr, quint16 port)
 {
-    this->listen(hostAddr, port);
+    init_connect();
+    return this->listen(hostAddr, port);
 }
