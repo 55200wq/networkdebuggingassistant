@@ -2,8 +2,6 @@
 #define TESTFORM_H
 
 #include <QWidget>
-#include "../src/tcpserver.h"
-#include "../src/tcpclient.h"
 
 namespace Ui {
 class testForm;
@@ -16,9 +14,11 @@ class testForm : public QWidget
 public:
     explicit testForm(QWidget *parent = nullptr);
     ~testForm();
+    void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE ;
 
 private:
     Ui::testForm *ui;
+    QImage img;
 };
 
 #endif // TESTFORM_H

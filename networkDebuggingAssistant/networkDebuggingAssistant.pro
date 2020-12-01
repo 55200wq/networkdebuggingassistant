@@ -16,17 +16,21 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    ../src/openDir/openDir.cpp \
     ../src/tcpclient.cpp \
     ../src/tcpserver.cpp \
     main.cpp \
     networkdebuggingassistant.cpp \
+    tcpClientTest.cpp \
     tcpServerTest.cpp \
     testForm.cpp
 
 HEADERS += \
+    ../src/openDir/openDir.h \
     ../src/tcpclient.h \
     ../src/tcpserver.h \
     networkdebuggingassistant.h \
+    tcpClientTest.h \
     tcpServerTest.h \
     testForm.h
 

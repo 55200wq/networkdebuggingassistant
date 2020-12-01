@@ -1,9 +1,15 @@
+/**
+ * brief:           tcpServer
+ * author:          wq
+ * date:            2020-12-01
+ */
 #include "tcpServerTest.h"
 
 tcpServerTest::tcpServerTest(QObject *parent) :
     QTcpServer(parent)
 {
     qRegisterMetaType<QTcpSocket*>("QTcpSocket*");
+    qRegisterMetaType<QTcpSocket*>("QAbstractSocket::SocketState");
 
 }
 tcpServerTest::~tcpServerTest()
@@ -47,6 +53,7 @@ void tcpServerTest::init_clientSocketConnect(QTcpSocket* clientSocket)
     connect(clientSocket, SIGNAL(disconnected()), this, SLOT(onSocketDisconnection()));
     connect(clientSocket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(onSocketStatChanged(QAbstractSocket::SocketState)));
     connect(clientSocket, SIGNAL(readyRead()), this, SLOT(onSocketReadyRead()));
+    connect(clientSocket, SIGNAL(QAbstractSocket::errorOccurred(QAbstractSocket::SocketError)), this, SLOT(onSocketError(QAbstractSocket::SocketError)));
 }
 
 void tcpServerTest::clientSocketDisconnect(QTcpSocket* clientSocket)
@@ -55,6 +62,7 @@ void tcpServerTest::clientSocketDisconnect(QTcpSocket* clientSocket)
     disconnect(clientSocket, SIGNAL(disconnected()), this, SLOT(onSocketDisconnection()));
     disconnect(clientSocket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(onSocketStatChanged(QAbstractSocket::SocketState)));
     disconnect(clientSocket, SIGNAL(readyRead()), this, SLOT(onSocketReadyRead()));
+    disconnect(clientSocket, SIGNAL(QAbstractSocket::errorOccurred(QAbstractSocket::SocketError)), this, SLOT(onSocketError(QAbstractSocket::SocketError)));
 }
 /************************** 类普通成员函数 *****************************/
 //连接成功后获取主机信息
@@ -150,15 +158,22 @@ void tcpServerTest::onSocketStatChanged(QAbstractSocket::SocketState)
 {
 
 }
+void tcpServerTest::onSocketError(QAbstractSocket :: SocketError socketError)//出错槽函数
+{
+
+}
 void tcpServerTest::onSocketReadyRead()//读取数据进行处理
 {
     QTcpSocket* socket = (QTcpSocket*)QObject::sender();
-    qDebug()<<"来自" << sockInfoMap[socket]->addr.toString()<<"  的消息： ";
-    //qDebug()<<socker->readAll();
-    auto info = this->sockInfoMap[socket];
-    *info->revData = socket->readAll();
-    qDebug()<<info->revData->data();
-    sendSocketRevDataToClientSignal(socket, info->revData);
+    if(socket->isValid()){
+        qDebug()<<"来自" << sockInfoMap[socket]->addr.toString()<<"  的消息： ";
+        //qDebug()<<socker->readAll();
+        auto info = this->sockInfoMap[socket];
+        *info->revData = socket->readAll();
+        qDebug()<<info->revData->data();
+        sendSocketRevDataToClientSignal(socket, info->revData);
+    }
+
 
 }
 

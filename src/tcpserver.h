@@ -5,6 +5,7 @@
 #include <QTcpServer>
 #include <QNetworkInterface>
 #include <QTcpSocket>
+
 struct socket_info{
     quint16 port;
     QHostAddress addr;

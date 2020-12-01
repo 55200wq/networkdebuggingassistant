@@ -53,6 +53,8 @@ public slots:
 
     void onSocketStatChanged(QAbstractSocket::SocketState);
 
+    void onSocketError(QAbstractSocket :: SocketError socketError);
+
     void onSocketReadyRead();
 
     void closeServerSlot();//关闭服务器,释放相关资源
@@ -82,6 +84,7 @@ private:
     //私有变量
     QList<QTcpSocket*> clientList;//连接上来的客户端列表
     QMap<QTcpSocket*, socket_info*> sockInfoMap;//socket与socket_info关联，socker_info 是对方主机信息
+    quint16 socketStat = QAbstractSocket::UnconnectedState;
 };
 
 #endif // TCPSERVERTEST_H
