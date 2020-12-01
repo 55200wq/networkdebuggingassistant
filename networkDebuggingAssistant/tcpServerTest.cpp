@@ -53,7 +53,7 @@ void tcpServerTest::init_clientSocketConnect(QTcpSocket* clientSocket)
     connect(clientSocket, SIGNAL(disconnected()), this, SLOT(onSocketDisconnection()));
     connect(clientSocket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(onSocketStatChanged(QAbstractSocket::SocketState)));
     connect(clientSocket, SIGNAL(readyRead()), this, SLOT(onSocketReadyRead()));
-    connect(clientSocket, SIGNAL(QAbstractSocket::errorOccurred(QAbstractSocket::SocketError)), this, SLOT(onSocketError(QAbstractSocket::SocketError)));
+    //connect(clientSocket, SIGNAL(QAbstractSocket::errorOccurred(QAbstractSocket::SocketError)), this, SLOT(onSocketError(QAbstractSocket::SocketError)));
 }
 
 void tcpServerTest::clientSocketDisconnect(QTcpSocket* clientSocket)
@@ -62,7 +62,7 @@ void tcpServerTest::clientSocketDisconnect(QTcpSocket* clientSocket)
     disconnect(clientSocket, SIGNAL(disconnected()), this, SLOT(onSocketDisconnection()));
     disconnect(clientSocket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(onSocketStatChanged(QAbstractSocket::SocketState)));
     disconnect(clientSocket, SIGNAL(readyRead()), this, SLOT(onSocketReadyRead()));
-    disconnect(clientSocket, SIGNAL(QAbstractSocket::errorOccurred(QAbstractSocket::SocketError)), this, SLOT(onSocketError(QAbstractSocket::SocketError)));
+    //disconnect(clientSocket, SIGNAL(QAbstractSocket::errorOccurred(QAbstractSocket::SocketError)), this, SLOT(onSocketError(QAbstractSocket::SocketError)));
 }
 /************************** 类普通成员函数 *****************************/
 //连接成功后获取主机信息

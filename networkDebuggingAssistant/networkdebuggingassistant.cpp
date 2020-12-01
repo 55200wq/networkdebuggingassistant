@@ -20,6 +20,7 @@ networkDebuggingAssistant::networkDebuggingAssistant(QWidget *parent)
     customContextMenu->addAction(ui->action_SetWidthBgColor);
     customContextMenu->addAction(ui->action_setFont);
     server = new tcpServerTest(this);
+    client = new tcpClientTest(this);
     clientSocketList = this->server->getClientList();
     /*********************** 连接信号与槽 **************************/
     connect(this, SIGNAL(closeServerSignal()), this->server, SLOT(closeServerSlot()));;
@@ -32,6 +33,8 @@ networkDebuggingAssistant::~networkDebuggingAssistant()
 {
     delete ui;
     delete customContextMenu;
+    delete server;
+    delete client;
 }
 
 void networkDebuggingAssistant::getLocalAddressList(QList<QHostAddress> &list)
@@ -235,15 +238,15 @@ void networkDebuggingAssistant::on_pBtn_connect_clicked()
     case TCP_CLIENT://客户端连接服务器
         if(pBtflag){//关闭连接
 
+            success = false;
         }
         else{//创建连接
-            ui->setupUi(this);
-            ui->lb_clientAddr->show();
-            ui->lEt_clientAddr->show();
-            ui->lb_clientPort->show();
-            ui->sBx_clientPort->show();
-            ui->lb_clientList->hide();
-            ui->cBx_clientList->hide();
+            QHostAddress serverAddr;
+            serverAddr.setAddress(ui->cBx_hostAddr->currentText());
+            quint16 serverPort = ui->sBx_port->value();
+            this->client->connectToTcpServer(serverAddr, serverPort);
+            success = true;
+
         }
         break;
     case UDP:
@@ -251,6 +254,7 @@ void networkDebuggingAssistant::on_pBtn_connect_clicked()
 
         }
         else{//创建连接
+
             success = true;
         }
         break;
@@ -267,6 +271,26 @@ void networkDebuggingAssistant::on_pBtn_connect_clicked()
     }
     else {
         if(success){
+            if(TCP_SERVER == connectType)
+            {
+                //ui->setupUi(this);
+                ui->lb_clientAddr->hide();
+                ui->lEt_clientAddr->hide();
+                ui->lb_clientPort->hide();
+                ui->sBx_clientPort->hide();
+                ui->lb_clientList->show();
+                ui->cBx_clientList->show();
+            }
+            else if(TCP_CLIENT == connectType)
+            {
+                //ui->setupUi(this);
+                ui->lb_clientAddr->show();
+                ui->lEt_clientAddr->show();
+                ui->lb_clientPort->show();
+                ui->sBx_clientPort->show();
+                ui->lb_clientList->hide();
+                ui->cBx_clientList->hide();
+            }
             ui->pBtn_connect->setText("断开连接");
             ui->cBx_hostAddr->setEnabled(false);
             ui->cBx_connectType->setEnabled(false);

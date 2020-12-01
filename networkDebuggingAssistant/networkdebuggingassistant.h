@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QMenu>
 #include "tcpServerTest.h"
+#include "tcpClientTest.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class networkDebuggingAssistant; }
@@ -58,6 +59,7 @@ private slots:
 
 public:
     tcpServerTest* server;
+    tcpClientTest* client;
     QList<QHostAddress> localAddressList;
     QList<QTcpSocket*>* clientSocketList;
 private:
