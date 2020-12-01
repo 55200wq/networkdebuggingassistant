@@ -38,6 +38,7 @@ public:
     QMap<QTcpSocket*, socket_info*>* getSockInfoMap();
 
     bool createServer(const QHostAddress& hostAddr, quint16 port);
+    int ServerSendDataToClient(QTcpSocket* clientSocket, QByteArray& data);
 
     static QList<QHostAddress> getLocalAddrList();
     static QList<QNetworkInterface> getAllLocalNetworkInterface();

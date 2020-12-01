@@ -81,6 +81,11 @@ QMap<QTcpSocket*, socket_info*>* tcpServerTest::getSockInfoMap()
 {
     return &(this->sockInfoMap);
 }
+int tcpServerTest::ServerSendDataToClient(QTcpSocket* clientSocket, QByteArray& data)
+{
+    return clientSocket->write(data.data(), data.size());//发送数据
+}
+
 // 静态函数
 QList<QHostAddress> tcpServerTest::getLocalAddrList()
 {

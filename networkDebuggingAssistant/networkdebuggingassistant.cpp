@@ -69,6 +69,60 @@ void networkDebuggingAssistant::showAllLocalAddressTo_cBx_hostAddr()
     ui->cBx_hostAddr->setCurrentIndex(curr_index);
 }
 
+
+
+/***************** network 相关 ****************/
+/////////////////////////////////////////////////////
+/// \brief networkDebuggingAssistant::socketConnectSlot
+/// \param client
+///
+/// TCPServer 相关槽函数
+///
+void networkDebuggingAssistant::socketConnectSlot(QTcpSocket* client)
+{
+    //qDebug()<<"parent: ";
+    //qDebug()<<"客户端连接成功";
+
+    //在UI上显示相应客户端信息
+    ui->cBx_clientList->addItem(client->peerAddress().toString()+":"+QString::number( client->peerPort()), QVariant::fromValue(client));
+
+}
+void networkDebuggingAssistant::socketDisconnectSlot(QTcpSocket* client)
+{
+    //qDebug()<<"parent: ";
+    //qDebug()<<"客户端断开";
+    //在UI上删除相应信息
+    int index = this->clientSocketList->indexOf(client);
+    ui->cBx_clientList->removeItem(index);
+
+}
+void networkDebuggingAssistant::socketRevDataToClientSlot(QTcpSocket* client, QByteArray* data)
+{
+    qDebug()<<"接收到消息";
+    QMap<QTcpSocket*, socket_info*>* map = this->server->getSockInfoMap();
+    auto socketInfo = map->value(client);
+    ui->pTE_showData->appendPlainText(QString(*socketInfo->revData));
+}
+
+
+/////////////////////////////////////////////////////////////
+/// \brief networkDebuggingAssistant::on_cBx_connectType_currentIndexChanged
+/// \param index
+///
+/// TCPClient 相关槽函数
+///
+
+
+
+
+/////////////////////////////////////////////////////////////
+/// \brief networkDebuggingAssistant::on_cBx_connectType_activated
+/// \param index
+///
+/// UI 控件槽函数
+///
+///
+
 void networkDebuggingAssistant::on_cBx_connectType_activated(int index)
 {
     switch (index) {
@@ -113,54 +167,7 @@ void networkDebuggingAssistant::on_action_setFont_triggered()
     box.exec();
 }
 
-/***************** network 相关 ****************/
-/////////////////////////////////////////////////////
-/// \brief networkDebuggingAssistant::socketConnectSlot
-/// \param client
-///
-/// TCPServer 相关槽函数
-///
-void networkDebuggingAssistant::socketConnectSlot(QTcpSocket* client)
-{
-    //qDebug()<<"parent: ";
-    //qDebug()<<"客户端连接成功";
 
-    //在UI上显示相应客户端信息
-    ui->cBx_clientList->addItem(client->peerAddress().toString()+":"+QString::number( client->peerPort()), QVariant::fromValue(client));
-
-}
-void networkDebuggingAssistant::socketDisconnectSlot(QTcpSocket* client)
-{
-    //qDebug()<<"parent: ";
-    //qDebug()<<"客户端断开";
-    //在UI上删除相应信息
-    int index = this->clientSocketList->indexOf(client);
-    ui->cBx_clientList->removeItem(index);
-}
-void networkDebuggingAssistant::socketRevDataToClientSlot(QTcpSocket* client, QByteArray* data)
-{
-    qDebug()<<"接收到消息";
-    QMap<QTcpSocket*, socket_info*>* map = this->server->getSockInfoMap();
-    auto socketInfo = map->value(client);
-    ui->pTE_showData->appendPlainText(QString(*socketInfo->revData));
-}
-
-/////////////////////////////////////////////////////////////
-/// \brief networkDebuggingAssistant::on_cBx_connectType_currentIndexChanged
-/// \param index
-///
-/// TCPClient 相关槽函数
-///
-
-
-
-
-/////////////////////////////////////////////////////////////
-/// \brief networkDebuggingAssistant::on_cBx_connectType_currentIndexChanged
-/// \param index
-///
-/// UI 控件槽函数
-///
 void networkDebuggingAssistant::on_cBx_connectType_currentIndexChanged(int index)
 {
     switch(index){
@@ -174,9 +181,15 @@ void networkDebuggingAssistant::on_cBx_connectType_currentIndexChanged(int index
     }
 }
 
-void networkDebuggingAssistant::on_pBt_textSend_clicked()
+void networkDebuggingAssistant::on_pBt_textSend_clicked()//发送按键槽函数
 {
-
+    QTcpSocket* send_socktet = ui->cBx_clientList->currentData().value<QTcpSocket*>();
+    //向客户端发送信息
+    auto info = this->server->getSockInfoMap()->value(send_socktet);
+    QByteArray* array = info->sendData;
+    QString str = ui->lEt_textInput->text();
+    *array = str.toLocal8Bit();
+    this->server->ServerSendDataToClient(send_socktet, *info->sendData);
 }
 
 void networkDebuggingAssistant::on_pBtn_connect_clicked()
