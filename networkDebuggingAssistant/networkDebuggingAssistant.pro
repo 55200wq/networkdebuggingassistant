@@ -32,6 +32,7 @@ HEADERS += \
     networkdebuggingassistant.h \
     tcpClientTest.h \
     tcpServerTest.h \
+    tcpSocketHead.h \
     testForm.h
 
 FORMS += \

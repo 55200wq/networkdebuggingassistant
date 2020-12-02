@@ -4,19 +4,10 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QNetworkInterface>
+#include "tcpSocketHead.h"
 
-struct server_info{
-    quint16 port;
-    QHostAddress addr;
-};//用于创建服务器
-
-struct socket_info{
-    quint16 port;
-    QHostAddress addr;
-    QString hostName;
-    QByteArray* sendData;//发送数据buff
-    QByteArray* revData; //接收数据buff
-};
+using namespace TCP_SocketPublicInfo;
+using namespace TCP_ServerInfo;
 
 class tcpServerTest : public QTcpServer
 {
@@ -57,22 +48,19 @@ public slots:
 
     void onSocketReadyRead();
 
-    void closeServerSlot();//关闭服务器,释放相关资源
+    void closeServerSlot(int connectType);//关闭服务器,释放相关资源
 
 signals:
     //发送客户端连接信号
     void socketConnect(QTcpSocket*);
     //发送客户端断开信号
     void socketDisconnect(QTcpSocket*);
-    //发送数据信号
-    void socketSendDataToClientSignal(QTcpSocket* socket, QByteArray* data);
     //收到数据信号
     void socketRevDataToClientSignal(QTcpSocket* socket, QByteArray* data);
 
 public://发送信号内联函数
     inline void sendSocketConnect(QTcpSocket* socket){emit socketConnect(socket);}
     inline void sendSocketDisconnect(QTcpSocket* socket){emit socketDisconnect(socket);}
-    inline void sendsocketSendDataToClientSignal(QTcpSocket* socket, QByteArray* data){emit socketSendDataToClientSignal(socket, data);}
     inline void sendSocketRevDataToClientSignal(QTcpSocket* socket, QByteArray* data){emit socketRevDataToClientSignal(socket, data);}
 
 /*************************变量区***************************/

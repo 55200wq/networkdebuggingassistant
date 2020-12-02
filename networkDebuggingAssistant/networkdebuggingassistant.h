@@ -3,18 +3,14 @@
 
 #include <QMainWindow>
 #include <QMenu>
+#include "tcpSocketHead.h"
 #include "tcpServerTest.h"
 #include "tcpClientTest.h"
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class networkDebuggingAssistant; }
 QT_END_NAMESPACE
-
-typedef  enum{
-    TCP_SERVER,
-    TCP_CLIENT,
-    UDP
-} ConnectType;
 
 class networkDebuggingAssistant : public QMainWindow
 {
@@ -30,10 +26,10 @@ public slots:
     //自定义槽函数
 signals:
     //定义信号
-    void closeServerSignal();
+    void closeServerSignal(int connectType);
 public:
     //定义send signals 函数区
-    inline void sendCloseServer(){emit closeServerSignal();};
+    inline void sendCloseServer(int connectType){emit closeServerSignal(connectType);};
 
 public slots:
     void socketConnectSlot(QTcpSocket* client);
