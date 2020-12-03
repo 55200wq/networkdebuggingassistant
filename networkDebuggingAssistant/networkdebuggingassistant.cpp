@@ -178,7 +178,7 @@ void networkDebuggingAssistant::socketDisconnectSlot(QTcpSocket* client)
 }
 
 /**
- * @brief           发送数据
+ * @brief           接收来自客户端的数据 进行处理
  * @author          wq
  * @time            2020-12-02
  * @param
@@ -282,7 +282,7 @@ void networkDebuggingAssistant::on_cBx_connectType_activated(int index)
 }
 
 /**
- * @brief           连接类型的切换
+ * @brief           连接类型的切换事件处理
  * @author          wq
  * @time            2020-12-02
  * @param
@@ -394,7 +394,7 @@ END:
 }
 
 /**
- * @brief           连接处理
+ * @brief           连接按键事件处理槽函数
  * @author          wq
  * @time            2020-12-02
  * @param
