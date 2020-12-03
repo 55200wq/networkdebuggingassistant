@@ -28,7 +28,7 @@ void tcpClientModuleExample::socketDisconnectSlot(QTcpSocket* client)
 void tcpClientModuleExample::socketRevDataToClientSlot(QTcpSocket* client, QByteArray* rev_data)
 {
     qDebug()<<"TcpServrExample: 来自 server 的数据:";
-    qDebug()<<QString(rev_data->data());
+    qDebug()<<rev_data->data();
     //qDebug()<<QString(*rev_data);
 }
 
