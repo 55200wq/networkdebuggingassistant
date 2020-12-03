@@ -22,8 +22,7 @@ SOURCES += \
     main.cpp \
     networkdebuggingassistant.cpp \
     tcpClientTest.cpp \
-    tcpServerTest.cpp \
-    testForm.cpp
+    tcpServerTest.cpp
 
 HEADERS += \
     ../src/openDir/openDir.h \
@@ -32,12 +31,10 @@ HEADERS += \
     networkdebuggingassistant.h \
     tcpClientTest.h \
     tcpServerTest.h \
-    tcpSocketHead.h \
-    testForm.h
+    tcpSocketHead.h
 
 FORMS += \
-    networkdebuggingassistant.ui \
-    testForm.ui
+    networkdebuggingassistant.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
