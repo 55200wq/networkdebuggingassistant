@@ -16,6 +16,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    ../src/camera/caremaCollection.cpp \
     ../src/openDir/openDir.cpp \
     ../src/tcpclient.cpp \
     ../src/tcpserver.cpp \
@@ -25,6 +26,7 @@ SOURCES += \
     tcpServerTest.cpp
 
 HEADERS += \
+    ../src/camera/caremaCollection.h \
     ../src/openDir/openDir.h \
     ../src/tcpclient.h \
     ../src/tcpserver.h \
@@ -40,3 +42,6 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+
+include (../src/camera/carema.pri)
