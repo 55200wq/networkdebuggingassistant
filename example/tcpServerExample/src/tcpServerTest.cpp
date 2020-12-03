@@ -10,10 +10,7 @@ tcpServerTest::tcpServerTest(QObject *parent) :
 {
     qRegisterMetaType<QTcpSocket*>("QTcpSocket*");
     qRegisterMetaType<QTcpSocket*>("QAbstractSocket::SocketState");
-    connect(this,
-            SIGNAL(closeServerSignal(int )),
-            this,
-            SLOT(closeServerSlot(int )));
+
 }
 tcpServerTest::~tcpServerTest()
 {
@@ -21,10 +18,7 @@ tcpServerTest::~tcpServerTest()
     {
         serverDisconnect();
     }
-    disconnect(this,
-            SIGNAL(closeServerSignal(int )),
-            this,
-            SLOT(closeServerSlot(int )));
+
 }
 
 QList<QTcpSocket*>* tcpServerTest::getClientList()
@@ -43,6 +37,11 @@ QList<QTcpSocket*>* tcpServerTest::getClientList()
  */
 void tcpServerTest::init_connect()
 {
+    //主动关闭服务器槽函数
+    connect(this,
+            SIGNAL(closeServerSignal(int )),
+            this,
+            SLOT(closeServerSlot(int )));
     // 获取新客户端信号
     connect(this,
             SIGNAL(newConnection()),
@@ -74,6 +73,10 @@ void tcpServerTest::init_connect()
  */
 void tcpServerTest::serverDisconnect()
 {
+    disconnect(this,
+            SIGNAL(closeServerSignal(int )),
+            this,
+            SLOT(closeServerSlot(int )));
     // 与父类连接通知有新客户端连接上来
     disconnect(this,
                SIGNAL(socketConnect(QTcpSocket* )),

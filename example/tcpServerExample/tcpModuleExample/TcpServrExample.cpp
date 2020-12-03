@@ -9,6 +9,7 @@ TcpServrExample::TcpServrExample(QWidget *parent)
 {
     ui->setupUi(this);
     this->server = new tcpServerTest(this);
+
 }
 
 TcpServrExample::~TcpServrExample()

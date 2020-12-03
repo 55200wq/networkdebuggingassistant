@@ -6,8 +6,6 @@ tcpClientTest::tcpClientTest(QObject* parent) :
     qRegisterMetaType<QTcpSocket*>("QTcpSocket*");
     qRegisterMetaType<QTcpSocket*>("QAbstractSocket::SocketState");
 
-
-
     this->clientInfo = getHostInfo(this);
     socketConnectToUiSlot();
 }
@@ -31,6 +29,11 @@ void tcpClientTest::socketConnectToUiSlot()
     //与上层类交互相关信号
     if(this->parent() != Q_NULLPTR)
     {
+        // 在上层调用信号函数
+        connect(this,
+                SIGNAL(disconnectServerSignal(int )),
+                this,
+                SLOT(disconnectServerSlot(int )));
         connect(this,
                 SIGNAL(socketConnect(QTcpSocket* )),
                 this->parent(),
@@ -62,6 +65,12 @@ void tcpClientTest::socketDisconnectToUiSlot()
 {
     if(this->parent() != Q_NULLPTR)
     {
+        // 在上层调用信号函数
+        disconnect(this,
+                SIGNAL(disconnectServerSignal(int )),
+                this,
+                SLOT(disconnectServerSlot(int )));
+
         disconnect(this,
                    SIGNAL(socketConnect(QTcpSocket* )),
                    this->parent(),
@@ -87,11 +96,7 @@ void tcpClientTest::socketDisconnectToUiSlot()
  */
 void tcpClientTest::socketConnectSlot()
 {
-    // 在上层调用信号函数
-    connect(this,
-            SIGNAL(disconnectServerSignal(int )),
-            this,
-            SLOT(disconnectServerSlot(int )));
+
     //socket 相关信号
     connect(this,
             SIGNAL(connected()),
@@ -122,11 +127,7 @@ void tcpClientTest::socketConnectSlot()
  */
 void tcpClientTest::socketDisconnectSlot()
 {
-    // 在上层调用信号函数
-    disconnect(this,
-            SIGNAL(disconnectServerSignal(int )),
-            this,
-            SLOT(disconnectServerSlot(int )));
+
     // socket 相关
     disconnect(this,
                SIGNAL(connected()),

@@ -8,10 +8,6 @@ tcpClientModuleExample::tcpClientModuleExample(QWidget *parent)
 {
     ui->setupUi(this);
     this->client = new tcpClientTest(this);
-    connect(this->client,
-            SIGNAL(disconnectServerSignal(int )),
-            this->client,
-            SLOT(disconnectServerSlot(int )));
 }
 
 tcpClientModuleExample::~tcpClientModuleExample()
@@ -27,10 +23,35 @@ void tcpClientModuleExample::socketConnectSlot(QTcpSocket* client)
 void tcpClientModuleExample::socketDisconnectSlot(QTcpSocket* client)
 {
     qDebug()<<"TcpServrExample: 断开连接";
+    ui->pBtn_connect->click();
 }
 void tcpClientModuleExample::socketRevDataToClientSlot(QTcpSocket* client, QByteArray* rev_data)
 {
-    qDebug()<<"TcpServrExample: 来自client的数据:";
+    qDebug()<<"TcpServrExample: 来自 server 的数据:";
     qDebug()<<QString(rev_data->data());
     //qDebug()<<QString(*rev_data);
+}
+
+void tcpClientModuleExample::on_pBtn_connect_clicked()
+{
+    static int buttonFlag = false;
+    if(!buttonFlag)
+    {
+        QHostAddress addr(QHostAddress::LocalHost);
+        if(this->client->connectToTcpServer(addr, 8080) == QAbstractSocket::ConnectedState)
+        {
+            buttonFlag = true;
+            this->ui->pBtn_connect->setText("断开");
+        }
+        else
+        {
+            buttonFlag = false;
+        }
+    }
+    else
+    {
+        buttonFlag = false;
+        this->client->sendCloseServer(TCP_SocketPublicInfo::TCP_CLIENT);
+        this->ui->pBtn_connect->setText("连接");
+    }
 }

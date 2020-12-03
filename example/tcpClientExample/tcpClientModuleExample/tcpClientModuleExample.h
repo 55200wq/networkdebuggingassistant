@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include "../src/usingTcpClient.h"
+#include "../src/tcpSocketHead.h"
+#include <QTcpSocket>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class tcpClientModuleExample; }
@@ -16,19 +18,15 @@ public:
     tcpClientModuleExample(QWidget *parent = nullptr);
     ~tcpClientModuleExample();
 
+public slots:
     void socketConnectSlot(QTcpSocket* client);
     void socketDisconnectSlot(QTcpSocket* client);
     void socketRevDataToClientSlot(QTcpSocket* client, QByteArray* rev_data);
 
-signals:
-    //定义信号
-    void disconnectServerSignal(int connectType);
-public:
-    //定义send signals 函数区
-    inline void sendCloseServer(int connectType)
-    {
-        emit disconnectServerSignal(connectType);
-    };
+
+
+private slots:
+    void on_pBtn_connect_clicked();
 
 private:
     Ui::tcpClientModuleExample *ui;
