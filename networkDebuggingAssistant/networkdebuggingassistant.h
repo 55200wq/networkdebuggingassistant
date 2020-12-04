@@ -3,10 +3,41 @@
 
 #include <QMainWindow>
 #include <QMenu>
-#include "tcpSocketHead.h"
-#include "tcpServerTest.h"
-#include "tcpClientTest.h"
+#include "common/network/tcpSocketHead.h"
+#include "network/tcpServer/tcpServerTest.h"
+#include "network/tcpClient/tcpClientTest.h"
+#include "network/tcpServer/usingTcpServer.h"
+#include "network/tcpClient/usingTcpClient.h"
 
+class myServer : public usingTcpServer
+{
+    Q_OBJECT
+public:
+    explicit myServer(QObject *parent = Q_NULLPTR);
+    ~myServer();
+public slots:
+    void socketConnectSlot(QTcpSocket *clientSocket) ;
+    void socketDisconnectSlot(QTcpSocket *clientSocket);
+    //客户端接收数据函数
+    void socketRevDataToClientSlot(QTcpSocket *clientSocket, QByteArray *rev_data);
+
+};
+
+
+class myClient : public usingTcpClient
+{
+    Q_OBJECT
+public:
+    explicit myClient(QObject *parent = Q_NULLPTR);
+    ~myClient();
+public slots:
+     void socketConnectSlot(QTcpSocket *clientSocket);
+     void socketDisconnectSlot(QTcpSocket *clientSocket);
+    //客户端接收数据函数
+     void socketRevDataToClientSlot(QTcpSocket *clientSocket, QByteArray *rev_data);
+
+
+};
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class networkDebuggingAssistant; }
@@ -56,6 +87,7 @@ private slots:
 public:
     tcpServerTest* server;
     tcpClientTest* client;
+    myServer *myserver;
     QList<QHostAddress> localAddressList;
     QList<QTcpSocket*>* clientSocketList;
 private:
@@ -65,5 +97,9 @@ private:
     int connectType = 0;
 
 };
+
+
+
+
 Q_DECLARE_METATYPE(QHostAddress)
 #endif // NETWORKDEBUGGINGASSISTANT_H

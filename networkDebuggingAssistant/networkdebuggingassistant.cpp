@@ -19,8 +19,10 @@ networkDebuggingAssistant::networkDebuggingAssistant(QWidget *parent)
     customContextMenu = new QMenu;
     customContextMenu->addAction(ui->action_SetWidthBgColor);
     customContextMenu->addAction(ui->action_setFont);
-    server = new tcpServerTest(this);
+
     client = new tcpClientTest(this);
+    myserver = new myServer(this);
+    server = myserver->server;
     clientSocketList = this->server->getClientList();
     /*********************** 连接信号与槽 **************************/
     connect(this,
@@ -54,10 +56,6 @@ networkDebuggingAssistant::~networkDebuggingAssistant()
  */
 void networkDebuggingAssistant::getLocalAddressList(QList<QHostAddress> &list)
 {
-    /*if(!this->localAddressList.isEmpty()){
-        this->localAddressList.clear();
-    }*/
-    //this->localAddressList.append(QHostAddress::AnyIPv4);
     list = tcpServerTest::getLocalAddrList();
     for(auto addr : list)
     {
@@ -550,3 +548,64 @@ void networkDebuggingAssistant::on_pBtn_clear_pTEShowData_clicked()
 {
     ui->pTE_showData->clear();
 }
+
+/***********************************************************
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ * *********************************************************/
+myServer::myServer(QObject *parent) :
+    usingTcpServer(parent)
+{
+
+}
+
+myServer::~myServer()
+{
+
+}
+
+void myServer::socketConnectSlot(QTcpSocket *clientSocket)
+{
+    qDebug()<<"连接";
+}
+
+void myServer::socketDisconnectSlot(QTcpSocket *clientSocket)
+{
+    qDebug()<<"断开连接";
+}
+//客户端接收数据函数
+void myServer::socketRevDataToClientSlot(QTcpSocket *clientSocket, QByteArray *rev_data)
+{
+    qDebug()<<"有数据接收";
+}
+
+myClient::myClient(QObject *parent) :
+    usingTcpClient(parent)
+{
+
+}
+myClient::~myClient()
+{
+
+}
+void myClient::socketConnectSlot(QTcpSocket *clientSocket)
+{
+
+}
+void myClient::socketDisconnectSlot(QTcpSocket *clientSocket)
+{
+
+}
+//客户端接收数据函数
+void myClient::socketRevDataToClientSlot(QTcpSocket *clientSocket, QByteArray *rev_data)
+{
+
+}
+

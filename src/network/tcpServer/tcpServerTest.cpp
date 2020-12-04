@@ -15,7 +15,10 @@ tcpServerTest::tcpServerTest(QObject *parent) :
 tcpServerTest::~tcpServerTest()
 {
     if(currentClient->isOpen())
+    {
         serverDisconnect();
+    }
+
 }
 
 QList<QTcpSocket*>* tcpServerTest::getClientList()
@@ -34,6 +37,11 @@ QList<QTcpSocket*>* tcpServerTest::getClientList()
  */
 void tcpServerTest::init_connect()
 {
+    //主动关闭服务器槽函数
+    connect(this,
+            SIGNAL(closeServerSignal(int )),
+            this,
+            SLOT(closeServerSlot(int )));
     // 获取新客户端信号
     connect(this,
             SIGNAL(newConnection()),
@@ -65,6 +73,10 @@ void tcpServerTest::init_connect()
  */
 void tcpServerTest::serverDisconnect()
 {
+    disconnect(this,
+            SIGNAL(closeServerSignal(int )),
+            this,
+            SLOT(closeServerSlot(int )));
     // 与父类连接通知有新客户端连接上来
     disconnect(this,
                SIGNAL(socketConnect(QTcpSocket* )),
@@ -258,7 +270,7 @@ void tcpServerTest::onNewConnection()
     info = getHostInfo(this->currentClient);
 
     sockInfoMap.insert(this->currentClient, info);
-    qDebug()<<"name : " <<sockInfoMap[this->currentClient]->hostName;//
+    qDebug()<<"Host name : " <<sockInfoMap[this->currentClient]->hostName;//
     qDebug()<<sockInfoMap[this->currentClient]->addr.toString();
     qDebug()<<sockInfoMap[this->currentClient]->port;
     sendSocketConnect(this->currentClient);//发送新客户端连接信号
@@ -368,6 +380,17 @@ void tcpServerTest::closeServerSlot(int connectType)//关闭服务器
 bool tcpServerTest::createServer(const QHostAddress& hostAddr,
                                  quint16 port)
 {
+    bool createServerFlag;
     init_connect();
-    return this->listen(hostAddr, port);
+
+    createServerFlag = this->listen(hostAddr, port);
+    if(createServerFlag)
+    {
+        qDebug()<<"创建服务器成功";
+    }
+    else
+    {
+        qDebug()<<"创建服务器失败";
+    }
+    return createServerFlag;
 }

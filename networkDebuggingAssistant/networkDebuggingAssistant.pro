@@ -17,23 +17,22 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     ../src/camera/caremaCollection.cpp \
+    ../src/network/tcpClient/tcpClientTest.cpp \
+    ../src/network/tcpClient/usingTcpClient.cpp \
+    ../src/network/tcpServer/tcpServerTest.cpp \
+    ../src/network/tcpServer/usingTcpServer.cpp \
     ../src/openDir/openDir.cpp \
-    ../src/tcpclient.cpp \
-    ../src/tcpserver.cpp \
     main.cpp \
-    networkdebuggingassistant.cpp \
-    tcpClientTest.cpp \
-    tcpServerTest.cpp
+    networkdebuggingassistant.cpp
 
 HEADERS += \
     ../src/camera/caremaCollection.h \
+    ../src/network/tcpClient/tcpClientTest.h \
+    ../src/network/tcpClient/usingTcpClient.h \
+    ../src/network/tcpServer/tcpServerTest.h \
+    ../src/network/tcpServer/usingTcpServer.h \
     ../src/openDir/openDir.h \
-    ../src/tcpclient.h \
-    ../src/tcpserver.h \
-    networkdebuggingassistant.h \
-    tcpClientTest.h \
-    tcpServerTest.h \
-    tcpSocketHead.h
+    networkdebuggingassistant.h
 
 FORMS += \
     networkdebuggingassistant.ui
@@ -45,3 +44,4 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 
 include (../src/camera/carema.pri)
+INCLUDEPATH += "../src"

@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QTcpSocket>
 
-#include "tcpSocketHead.h"
+#include "../../common/network/tcpSocketHead.h"
 
 class tcpClientTest : public QTcpSocket
 {
@@ -36,7 +36,7 @@ public slots:
 
     void onSocketReadyRead();
 
-    void closeServerSlot(int connectType);//断开客户端槽函数
+    void disconnectServerSlot(int connectType);//断开客户端槽函数
 signals:
     //发送客户端连接信号，客户端进行连接
     void socketConnect(QTcpSocket*);
@@ -45,12 +45,47 @@ signals:
     //收到数据信号
     void socketRevDataToClientSignal(QTcpSocket* socket, QByteArray* data);
 
+    /**
+     * @brief           主动与服务器断开连接，一般在上层类的UI响应中调用
+     * @author          wq
+     * @time            2020-12-03
+     * @param
+     * @return          int connectType: 连接类型
+     * @remarks
+     */
+    //定义信号
+    void disconnectServerSignal(int connectType);
+
+
 public:
     //信号函数封装一层
-    inline void sendSocketConnect(QTcpSocket* socket){emit socketConnect(socket);}
-    inline void sendSocketDisconnect(QTcpSocket* socket){emit socketDisconnect(socket);}
-    inline void sendSocketRevDataToClientSignal(QTcpSocket* socket, QByteArray* data){emit socketRevDataToClientSignal(socket, data);}
+    inline void sendSocketConnect(QTcpSocket* socket)
+    {
+        emit socketConnect(socket);
+    }
+    inline void sendSocketDisconnect(QTcpSocket* socket)
+    {
+        emit socketDisconnect(socket);
+    }
+    inline void sendSocketRevDataToClientSignal(QTcpSocket* socket,
+                                                QByteArray* data)
+    {
+        emit socketRevDataToClientSignal(socket, data);
+    }
 
+     /**
+     * @brief           封装的信号函数,看信号简介
+     * @author          wq
+     * @time            2020-12-03
+     * @param
+     * @return
+     * @remarks
+     */
+    //定义send signals 函数区
+    inline void sendCloseServer(int connectType)
+    {
+        emit disconnectServerSignal(connectType);
+    };
     /************************* 变量区 ********************************/
 public:
     TCP_ServerInfo::socket_info* clientInfo;

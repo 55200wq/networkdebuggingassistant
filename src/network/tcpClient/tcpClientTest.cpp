@@ -5,6 +5,7 @@ tcpClientTest::tcpClientTest(QObject* parent) :
 {
     qRegisterMetaType<QTcpSocket*>("QTcpSocket*");
     qRegisterMetaType<QTcpSocket*>("QAbstractSocket::SocketState");
+
     this->clientInfo = getHostInfo(this);
     socketConnectToUiSlot();
 }
@@ -28,6 +29,11 @@ void tcpClientTest::socketConnectToUiSlot()
     //与上层类交互相关信号
     if(this->parent() != Q_NULLPTR)
     {
+        // 在上层调用信号函数
+        connect(this,
+                SIGNAL(disconnectServerSignal(int )),
+                this,
+                SLOT(disconnectServerSlot(int )));
         connect(this,
                 SIGNAL(socketConnect(QTcpSocket* )),
                 this->parent(),
@@ -59,6 +65,12 @@ void tcpClientTest::socketDisconnectToUiSlot()
 {
     if(this->parent() != Q_NULLPTR)
     {
+        // 在上层调用信号函数
+        disconnect(this,
+                SIGNAL(disconnectServerSignal(int )),
+                this,
+                SLOT(disconnectServerSlot(int )));
+
         disconnect(this,
                    SIGNAL(socketConnect(QTcpSocket* )),
                    this->parent(),
@@ -67,6 +79,10 @@ void tcpClientTest::socketDisconnectToUiSlot()
                    SIGNAL(socketDisconnect(QTcpSocket* )),
                    this->parent(),
                    SLOT(socketDisconnectSlot(QTcpSocket*)));
+        disconnect(this,
+                SIGNAL(socketRevDataToClientSignal(QTcpSocket*, QByteArray*)),
+                this->parent(),
+                SLOT(socketRevDataToClientSlot(QTcpSocket*, QByteArray*)));
     }
 }
 
@@ -80,6 +96,7 @@ void tcpClientTest::socketDisconnectToUiSlot()
  */
 void tcpClientTest::socketConnectSlot()
 {
+
     //socket 相关信号
     connect(this,
             SIGNAL(connected()),
@@ -111,6 +128,7 @@ void tcpClientTest::socketConnectSlot()
 void tcpClientTest::socketDisconnectSlot()
 {
 
+    // socket 相关
     disconnect(this,
                SIGNAL(connected()),
                this,
@@ -271,7 +289,7 @@ void tcpClientTest::onSocketReadyRead()
  * @return
  * @remarks
  */
-void tcpClientTest::closeServerSlot(int connectType)//主动关闭客户端槽函数
+void tcpClientTest::disconnectServerSlot(int connectType)//主动关闭客户端槽函数
 {
     if(connectType == TCP_SocketPublicInfo::TCP_CLIENT)
     {
